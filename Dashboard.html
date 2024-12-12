@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Factory Turnover Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
+</head>
+<body>
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <nav id="sidebar" class="sidebar">
+            <div class="sidebar-header">
+                <img src="LOGO.png" alt="Company Logo" class="logo">
+            </div>
+
+            <ul class="list-unstyled components" id="sidebarMenu">
+                <li class="active">
+                    <a href="index.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                </li>
+                <li>
+                    <a href="#productSubmenu" data-bs-toggle="collapse" data-bs-parent="#sidebarMenu" aria-expanded="false" class="dropdown-toggle">
+                        <i class="fas fa-box"></i> Product
+                    </a>
+                    <ul class="collapse list-unstyled" id="productSubmenu">
+                        <li>
+                            <a href="#"><i class="fas fa-cubes"></i> Materials</a>
+                        </li>
+                        <li>
+                            <a href="#"><i class="fas fa-leaf"></i> Raw Materials</a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#purchaseSubmenu" data-bs-toggle="collapse" data-bs-parent="#sidebarMenu" aria-expanded="false" class="dropdown-toggle">
+                        <i class="fas fa-shopping-cart"></i> Purchase
+                    </a>
+                    <ul class="collapse list-unstyled" id="purchaseSubmenu">
+                        <li>
+                            <a href="#vendorSubmenu" data-bs-toggle="collapse" data-bs-parent="#purchaseSubmenu" aria-expanded="false" class="dropdown-toggle">
+                                <i class="fas fa-user-tie"></i> Vendor
+                            </a>
+                            <ul class="collapse list-unstyled" id="vendorSubmenu">
+                                <li><a href="#"><i class="fas fa-plus"></i> Add</a></li>
+                                <li><a href="#"><i class="fas fa-cogs"></i> Manage</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#salesSubmenu" data-bs-toggle="collapse" data-bs-parent="#sidebarMenu" aria-expanded="false" class="dropdown-toggle">
+                        <i class="fas fa-chart-line"></i> Sales
+                    </a>
+                    <ul class="collapse list-unstyled" id="salesSubmenu">
+                        <li><a href="#"><i class="fas fa-clipboard-list"></i> Sale Products</a></li>
+                        <li><a href="#"><i class="fas fa-file-invoice-dollar"></i> Products Payments</a></li>
+                        <li>
+                            <a href="#customerPaymentSubmenu" data-bs-toggle="collapse" data-bs-parent="#salesSubmenu" aria-expanded="false" class="dropdown-toggle">
+                                <i class="fas fa-money-bill-wave"></i> Customer Payment
+                            </a>
+                            <ul class="collapse list-unstyled" id="customerPaymentSubmenu">
+                                <li><a href="#"><i class="fas fa-list"></i> Customer Products List</a></li>
+                                <li><a href="#"><i class="fas fa-credit-card"></i> Customer Payment</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Page Content -->
+        <div id="content">
+            <!-- Header -->
+            <nav class="navbar navbar-expand-lg">
+                <div class="container-fluid">
+                    <button type="button" id="sidebarCollapse" class="btn d-md-none">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div class="d-flex align-items-center ms-auto">
+                        <button class="btn btn-info me-3 d-none d-md-block">
+                            <i class="fas fa-chart-bar"></i> Reports
+                        </button>
+                        <div class="dropdown">
+                            <button class="btn btn-info dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <img src="/placeholder.svg?height=32&width=32" class="rounded-circle me-2" alt="User">
+                                <span class="d-none d-md-inline">Pravin Gaikwad</span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                <li><a class="dropdown-item" href="index.html">Logout</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Main Content -->
+            <div class="container-fluid">
+                <div class="row mb-3">
+                    <div class="col">
+                        <h4 class="text-center"><u>Departments</u></h4>
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col">
+                        <div class="department-buttons">
+                            <button class="btn btn-primary">Development Department</button>
+                            <button class="btn btn-success">Service Department</button>
+                            <button class="btn btn-info">Account Department</button>
+                            <button class="btn btn-warning">Sales Department</button>
+                            <button class="btn btn-danger">Store Department</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <canvas id="turnoverChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
+

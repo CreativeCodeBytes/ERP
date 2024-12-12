@@ -1,0 +1,243 @@
+:root {
+    --sidebar-width: 260px;
+    --header-height: 60px;
+    --primary-color: #007bff;
+    --secondary-color: #6c757d;
+    --sidebar-bg: #ebe0e0;
+    /* --sidebar-bg: #2c3e50; */
+    --sidebar-hover: #869cb3;
+    --sidebar-active: #2980b9;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f7fa;
+}
+
+.wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Sidebar Styles */
+#sidebar {
+    width: var(--sidebar-width);
+    background: var(--sidebar-bg);
+    color: #ecf0f1;
+    position: fixed;
+    height: 100vh;
+    overflow-y: auto;
+    transition: all 0.3s;
+    z-index: 1050;
+    left: 0;
+    transform: translateX(-100%);
+}
+
+#sidebar.active {
+    transform: translateX(0);
+}
+
+.sidebar-header {
+    /* padding: 20px; */
+    /* background: var(--sidebar-hover); */
+    text-align: center;
+}
+
+.logo {
+    max-width: 100%;
+    height: auto;
+}
+
+#sidebar ul.components {
+    padding: 20px 0;
+}
+
+#sidebar ul li a {
+    padding: 10px 20px;
+    display: block;
+    color: #070707;
+    text-decoration: none;
+    font-weight: bold;
+    transition: all 0.3s;
+}
+
+/* Sidebar item hover and active states */
+#sidebar ul li a:hover,
+#sidebar ul li a[aria-expanded="true"] {
+    /* background: var(--sidebar-hover); */
+    color: #fff;
+}
+
+#sidebar ul li.active > a,
+#sidebar ul li > a:focus,
+#sidebar ul li > a:hover,
+#sidebar ul li > a[aria-expanded="true"] {
+    background: var(--sidebar-active);
+    color: #fff;
+}
+
+/* Submenu styles */
+#sidebar ul ul a {
+    font-size: 0.9em !important;
+    padding-left: 30px !important;
+    background: var(--sidebar-hover);
+}
+
+#sidebar ul ul ul a {
+    padding-left: 45px !important;
+}
+
+/* Dropdown arrow */
+#sidebar .dropdown-toggle::after {
+    display: block;
+    position: absolute;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+}
+
+#sidebar a[data-bs-toggle="collapse"] {
+    position: relative;
+}
+
+#sidebar ul li a i {
+    margin-right: 10px;
+    width: 20px;
+    text-align: center;
+}
+
+/* Content Styles */
+#content {
+    width: 100%;
+    padding: 20px;
+    transition: all 0.3s;
+    position: relative;
+    left: 0;
+}
+
+.navbar {
+    background: linear-gradient(90deg, #3498db, #2ecc71);
+    padding: 15px;
+    height: var(--header-height);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.navbar .btn {
+    color: white;
+    border: none;
+}
+
+.navbar .btn:hover {
+    background: rgba(255,255,255,0.1);
+}
+
+/* Chart Container */
+.card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+.card-body {
+    padding: 20px;
+}
+
+/* Department Buttons */
+.department-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+    justify-content: center;
+}
+
+.department-buttons .btn {
+    flex: 1;
+    min-width: 150px;
+    padding: 10px 15px;
+    font-weight: bold;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+}
+
+.department-buttons .btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.department-buttons .btn.active {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Chart title styling */
+.chart-title {
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 20px;
+    color: #2c3e50;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Responsive Styles */
+@media (min-width: 768px) {
+    #sidebar {
+        transform: translateX(0);
+    }
+    #content {
+        width: calc(100% - var(--sidebar-width));
+        margin-left: var(--sidebar-width);
+    }
+}
+
+@media (max-width: 767px) {
+    #sidebar {
+        margin-left: -var(--sidebar-width);
+    }
+    
+    #sidebar.active {
+        margin-left: 0;
+    }
+    
+    #content {
+        width: 100%;
+        margin-left: 0;
+    }
+    
+    .department-buttons {
+        flex-direction: column;
+    }
+    
+    .department-buttons .btn {
+        width: 100%;
+    }
+
+    #sidebarCollapse {
+        display: block;
+    }
+}
+
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 1040;
+    opacity: 0;
+    transition: all 0.5s ease-in-out;
+}
+
+.sidebar-overlay.active {
+    display: block;
+    opacity: 1;
+}
+
