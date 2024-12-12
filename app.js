@@ -79,73 +79,131 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Initialize Chart
     let chart;
-    const ctx = document.getElementById('turnoverChart').getContext('2d');
-    
-    function createChart(department = null) {
-        const labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-        
-        // Sample data (you should replace this with real data)
-        const dataSets = {
-            'Development Department': [15, 12, 17, 14, 16, 13, 18, 15, 14, 16, 17, 15],
-            'Service Department': [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21],
-            'Account Department': [5, 7, 6, 8, 7, 9, 8, 10, 9, 11, 10, 12],
-            'Sales Department': [20, 22, 21, 23, 22, 24, 23, 25, 24, 26, 25, 27],
-            'Store Department': [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
-        };
+    const ctx = document.getElementById('taskChart').getContext('2d');
 
-        const data = {
-            labels: labels,
-            datasets: [{
-                label: department || 'All Departments',
-                data: department ? dataSets[department] : Object.values(dataSets).reduce((acc, curr) => curr.map((num, idx) => (acc[idx] || 0) + num), []),
-                backgroundColor: 'rgba(75, 192, 192, 0.6)',
-                borderColor: 'rgba(75, 192, 192, 1)',
-                borderWidth: 1
-            }]
+    function createChart(department = null) {
+        const dataSets = {
+            'Development Department': { total: 100, completed: 75, inProcess: 25, color: '#007bff' },
+            'Service Department': { total: 100, completed: 60, inProcess: 40, color: '#28a745' },
+            'Account Department': { total: 100, completed: 80, inProcess: 20, color: '#17a2b8' },
+            'Sales Department': { total: 100, completed: 70, inProcess: 30, color: '#ffc107' },
+            'Store Department': { total: 100, completed: 65, inProcess: 35, color: '#dc3545' }
         };
 
         if (chart) {
             chart.destroy();
         }
 
-        chart = new Chart(ctx, {
-            type: 'bar',
-            data: data,
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            callback: function(value) {
-                                return value + 'M';
+        if (department && department !== 'All Departments') {
+            const data = dataSets[department];
+            chart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['Completed', 'In-Process'],
+                    datasets: [{
+                        data: [data.completed, data.inProcess],
+                        backgroundColor: [data.color, lightenColor(data.color, 40)],
+                        borderColor: [data.color, lightenColor(data.color, 40)],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        },
+                        title: {
+                            display: true,
+                            text: department + ' - Task Status',
+                            font: {
+                                size: 20,
+                                weight: 'bold'
                             }
                         }
                     }
+                }
+            });
+        } else {
+            const labels = [];
+            const data = [];
+            const backgroundColor = [];
+
+            for (const [dept, info] of Object.entries(dataSets)) {
+                labels.push(dept);
+                data.push(info.total);
+                backgroundColor.push(info.color);
+            }
+
+            chart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: backgroundColor,
+                        borderColor: backgroundColor,
+                        borderWidth: 1
+                    }]
                 },
-                plugins: {
-                    legend: {
-                        display: false
-                    },
-                    title: {
-                        display: true,
-                        text: department || 'Factory Turnover Chart',
-                        font: {
-                            size: 20,
-                            weight: 'bold'
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right'
+                        },
+                        title: {
+                            display: true,
+                            text: 'All Departments - Task Status',
+                            font: {
+                                size: 24,
+                                weight: 'bold'
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.parsed || 0;
+                                    const dataset = context.dataset;
+                                    const total = dataset.data.reduce((acc, data) => acc + data, 0);
+                                    const percentage = ((value / total) * 100).toFixed(1);
+                                    const deptData = dataSets[label];
+                                    return [
+                                        `${label}: ${percentage}% (${value} tasks)`,
+                                        `Completed: ${deptData.completed}`,
+                                        `In-Process: ${deptData.inProcess}`
+                                    ];
+                                }
+                            }
                         }
                     }
                 }
-            }
-        });
+            });
+        }
     }
 
-    // Initial chart creation
-    createChart();
+    // Helper function to lighten a color
+    function lightenColor(color, percent) {
+        const num = parseInt(color.replace("#", ""), 16),
+            amt = Math.round(2.55 * percent),
+            R = (num >> 16) + amt,
+            B = (num >> 8 & 0x00FF) + amt,
+            G = (num & 0x0000FF) + amt;
+        return "#" + (0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 +
+            (B < 255 ? B < 1 ? 0 : B : 255) * 0x100 +
+            (G < 255 ? G < 1 ? 0 : G : 255)).toString(16).slice(1);
+    }
+
+    // Remove the department button click handlers
+    const departmentButtons = document.querySelectorAll('.department-buttons .btn');
+    departmentButtons.forEach(button => {
+        button.removeEventListener('click', null);
+    });
 
     // Department button click effect and chart update
-    const departmentButtons = document.querySelectorAll('.department-buttons .btn');
     departmentButtons.forEach(button => {
         button.addEventListener('click', function() {
             departmentButtons.forEach(btn => btn.classList.remove('active'));
@@ -154,10 +212,81 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    // Add an "All Departments" button
+    const allDepartmentsButton = document.createElement('button');
+    allDepartmentsButton.textContent = 'All Departments';
+    allDepartmentsButton.classList.add('btn', 'btn-secondary');
+    document.querySelector('.department-buttons').prepend(allDepartmentsButton);
+
+    allDepartmentsButton.addEventListener('click', function() {
+        departmentButtons.forEach(btn => btn.classList.remove('active'));
+        this.classList.add('active');
+        createChart('All Departments');
+    });
+
+    // Initial chart creation
+    createChart('All Departments');
+
+    function createBarChart() {
+        const ctx = document.getElementById('barChart').getContext('2d');
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const departments = ['Development', 'Service', 'Account', 'Sales', 'Store'];
+
+        const data = {
+            labels: months,
+            datasets: departments.map((dept, index) => ({
+                label: dept + ' Completed',
+                data: months.map(() => Math.floor(Math.random() * 50) + 10),
+                backgroundColor: `rgba(${index * 50}, ${255 - index * 50}, ${index * 25}, 0.6)`,
+                stack: 'Stack ' + index,
+            })).concat(departments.map((dept, index) => ({
+                label: dept + ' In-Process',
+                data: months.map(() => Math.floor(Math.random() * 30) + 5),
+                backgroundColor: `rgba(${index * 50}, ${255 - index * 50}, ${index * 25}, 0.3)`,
+                stack: 'Stack ' + index,
+            })))
+        };
+
+        let barChart = new Chart(ctx, {
+            type: 'bar',
+            data: data,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'All Departments - Task Status (Monthly)',
+                        font: {
+                            size: 18,
+                            weight: 'bold'
+                        }
+                    },
+                    legend: {
+                        position: 'right',
+                    }
+                },
+                scales: {
+                    x: {
+                        stacked: true,
+                    },
+                    y: {
+                        stacked: true
+                    }
+                }
+            }
+        });
+    }
+
+    createBarChart();
+
     // Adjust chart size on window resize
     window.addEventListener('resize', function() {
         if (chart) {
             chart.resize();
+        }
+        if (barChart) {
+            barChart.resize();
         }
     });
 });

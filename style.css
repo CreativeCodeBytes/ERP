@@ -4,7 +4,6 @@
     --primary-color: #007bff;
     --secondary-color: #6c757d;
     --sidebar-bg: #ebe0e0;
-    /* --sidebar-bg: #2c3e50; */
     --sidebar-hover: #869cb3;
     --sidebar-active: #2980b9;
 }
@@ -38,8 +37,6 @@ body {
 }
 
 .sidebar-header {
-    /* padding: 20px; */
-    /* background: var(--sidebar-hover); */
     text-align: center;
 }
 
@@ -61,10 +58,8 @@ body {
     transition: all 0.3s;
 }
 
-/* Sidebar item hover and active states */
 #sidebar ul li a:hover,
 #sidebar ul li a[aria-expanded="true"] {
-    /* background: var(--sidebar-hover); */
     color: #fff;
 }
 
@@ -76,7 +71,6 @@ body {
     color: #fff;
 }
 
-/* Submenu styles */
 #sidebar ul ul a {
     font-size: 0.9em !important;
     padding-left: 30px !important;
@@ -87,7 +81,6 @@ body {
     padding-left: 45px !important;
 }
 
-/* Dropdown arrow */
 #sidebar .dropdown-toggle::after {
     display: block;
     position: absolute;
@@ -174,17 +167,7 @@ body {
 .department-buttons .btn.active {
     transform: translateY(-2px);
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-/* Chart title styling */
-.chart-title {
-    font-size: 24px;
-    font-weight: bold;
-    text-align: center;
-    margin-bottom: 20px;
-    color: #2c3e50;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    opacity: 0.8;
 }
 
 /* Responsive Styles */
@@ -239,5 +222,13 @@ body {
 .sidebar-overlay.active {
     display: block;
     opacity: 1;
+}
+
+#pieChart, #barChart {
+    height: 400px;
+}
+
+#barChart {
+    height: 400px;
 }
 
