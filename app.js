@@ -83,11 +83,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function createChart(department = null) {
         const dataSets = {
-            'Development Department': { total: 100, completed: 75, inProcess: 25, color: '#007bff' },
-            'Service Department': { total: 100, completed: 60, inProcess: 40, color: '#28a745' },
-            'Account Department': { total: 100, completed: 80, inProcess: 20, color: '#17a2b8' },
-            'Sales Department': { total: 100, completed: 70, inProcess: 30, color: '#ffc107' },
-            'Store Department': { total: 100, completed: 65, inProcess: 35, color: '#dc3545' }
+            'Development Department': { total: 100, completed: 60, inProcess: 25, pending: 15, color: '#007bff' },
+            'Service Department': { total: 100, completed: 50, inProcess: 30, pending: 20, color: '#28a745' },
+            'Account Department': { total: 100, completed: 70, inProcess: 20, pending: 10, color: '#17a2b8' },
+            'Sales Department': { total: 100, completed: 55, inProcess: 30, pending: 15, color: '#ffc107' },
+            'Store Department': { total: 100, completed: 45, inProcess: 35, pending: 20, color: '#dc3545' }
         };
 
         if (chart) {
@@ -99,11 +99,11 @@ document.addEventListener('DOMContentLoaded', function() {
             chart = new Chart(ctx, {
                 type: 'pie',
                 data: {
-                    labels: ['Completed', 'In-Process'],
+                    labels: ['Completed', 'In-Process', 'Pending'],
                     datasets: [{
-                        data: [data.completed, data.inProcess],
-                        backgroundColor: [data.color, lightenColor(data.color, 40)],
-                        borderColor: [data.color, lightenColor(data.color, 40)],
+                        data: [data.completed, data.inProcess, data.pending],
+                        backgroundColor: [data.color, lightenColor(data.color, 40), lightenColor(data.color, 70)],
+                        borderColor: [data.color, lightenColor(data.color, 40), lightenColor(data.color, 70)],
                         borderWidth: 1
                     }]
                 },
@@ -126,24 +126,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
         } else {
-            const labels = [];
-            const data = [];
-            const backgroundColor = [];
-
-            for (const [dept, info] of Object.entries(dataSets)) {
-                labels.push(dept);
-                data.push(info.total);
-                backgroundColor.push(info.color);
-            }
+            const labels = Object.keys(dataSets);
+            const completedData = labels.map(dept => dataSets[dept].completed);
+            const inProcessData = labels.map(dept => dataSets[dept].inProcess);
+            const pendingData = labels.map(dept => dataSets[dept].pending);
+            const backgroundColors = labels.map(dept => dataSets[dept].color);
 
             chart = new Chart(ctx, {
                 type: 'pie',
                 data: {
                     labels: labels,
                     datasets: [{
-                        data: data,
-                        backgroundColor: backgroundColor,
-                        borderColor: backgroundColor,
+                        data: labels.map(dept => dataSets[dept].total),
+                        backgroundColor: backgroundColors,
+                        borderColor: backgroundColors,
                         borderWidth: 1
                     }]
                 },
@@ -166,7 +162,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             callbacks: {
                                 label: function(context) {
                                     const label = context.label || '';
-                                    const value = context.parsed || 0;
+                                    const value = context.raw || 0;
                                     const dataset = context.dataset;
                                     const total = dataset.data.reduce((acc, data) => acc + data, 0);
                                     const percentage = ((value / total) * 100).toFixed(1);
@@ -174,7 +170,8 @@ document.addEventListener('DOMContentLoaded', function() {
                                     return [
                                         `${label}: ${percentage}% (${value} tasks)`,
                                         `Completed: ${deptData.completed}`,
-                                        `In-Process: ${deptData.inProcess}`
+                                        `In-Process: ${deptData.inProcess}`,
+                                        `Pending: ${deptData.pending}`
                                     ];
                                 }
                             }
@@ -192,18 +189,12 @@ document.addEventListener('DOMContentLoaded', function() {
             R = (num >> 16) + amt,
             B = (num >> 8 & 0x00FF) + amt,
             G = (num & 0x0000FF) + amt;
-        return "#" + (0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 +
-            (B < 255 ? B < 1 ? 0 : B : 255) * 0x100 +
+        return "#" + (0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000+ (B < 255 ? B < 1 ? 0 : B : 255) * 0x100 +
             (G < 255 ? G < 1 ? 0 : G : 255)).toString(16).slice(1);
     }
 
-    // Remove the department button click handlers
-    const departmentButtons = document.querySelectorAll('.department-buttons .btn');
-    departmentButtons.forEach(button => {
-        button.removeEventListener('click', null);
-    });
-
     // Department button click effect and chart update
+    const departmentButtons = document.querySelectorAll('.department-buttons .btn');
     departmentButtons.forEach(button => {
         button.addEventListener('click', function() {
             departmentButtons.forEach(btn => btn.classList.remove('active'));
@@ -212,12 +203,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Add an "All Departments" button
-    const allDepartmentsButton = document.createElement('button');
-    allDepartmentsButton.textContent = 'All Departments';
-    allDepartmentsButton.classList.add('btn', 'btn-secondary');
-    document.querySelector('.department-buttons').prepend(allDepartmentsButton);
-
+    // Add click event for "All Departments" button
+    const allDepartmentsButton = document.getElementById('allDepartmentsBtn');
     allDepartmentsButton.addEventListener('click', function() {
         departmentButtons.forEach(btn => btn.classList.remove('active'));
         this.classList.add('active');
@@ -234,17 +221,26 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const data = {
             labels: months,
-            datasets: departments.map((dept, index) => ({
-                label: dept + ' Completed',
-                data: months.map(() => Math.floor(Math.random() * 50) + 10),
-                backgroundColor: `rgba(${index * 50}, ${255 - index * 50}, ${index * 25}, 0.6)`,
-                stack: 'Stack ' + index,
-            })).concat(departments.map((dept, index) => ({
-                label: dept + ' In-Process',
-                data: months.map(() => Math.floor(Math.random() * 30) + 5),
-                backgroundColor: `rgba(${index * 50}, ${255 - index * 50}, ${index * 25}, 0.3)`,
-                stack: 'Stack ' + index,
-            })))
+            datasets: departments.flatMap((dept, index) => [
+                {
+                    label: dept + ' Completed',
+                    data: months.map(() => Math.floor(Math.random() * 50) + 10),
+                    backgroundColor: `rgba(${index * 50}, ${255 - index * 50}, ${index * 25}, 0.8)`,
+                    stack: 'Stack ' + index,
+                },
+                {
+                    label: dept + ' In-Process',
+                    data: months.map(() => Math.floor(Math.random() * 30) + 5),
+                    backgroundColor: `rgba(${index * 50}, ${255 - index * 50}, ${index * 25}, 0.5)`,
+                    stack: 'Stack ' + index,
+                },
+                {
+                    label: dept + ' Pending',
+                    data: months.map(() => Math.floor(Math.random() * 20) + 5),
+                    backgroundColor: `rgba(${index * 50}, ${255 - index * 50}, ${index * 25}, 0.3)`,
+                    stack: 'Stack ' + index,
+                }
+            ])
         };
 
         let barChart = new Chart(ctx, {
@@ -290,4 +286,3 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
-

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recycle Vendors</title>
+    <link rel="stylesheet" href="vendor.css">
+</head>
+<body>
+    <header>
+        <h1>Recycle Vendors</h1>
+    </header>
+    <input type="text" id="searchInputRecycle" placeholder="Search by Name, ID, or Contact" onkeyup="searchRecycleBin()">
+    <table>
+        <thead>
+            <tr>
+                <th>Vendor ID</th>
+                <th>Name</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="recycleTable">
+            <!-- Recycle bin vendors dynamically loaded -->
+        </tbody>
+    </table>
+
+    <script>
+        const recycleTable = document.getElementById('recycleTable');
+        const searchInputRecycle = document.getElementById('searchInputRecycle');
+        let recycleBin = JSON.parse(localStorage.getItem('recycleBin')) || [];
+        let vendors = JSON.parse(localStorage.getItem('vendors')) || [];
+
+        // Load recycle bin vendors
+        function loadRecycleBin() {
+            recycleTable.innerHTML = '';
+            recycleBin.forEach((vendor, index) => {
+                recycleTable.insertAdjacentHTML('beforeend', `
+                    <tr>
+                        <td>${vendor.id}</td>
+                        <td>${vendor.name}</td>
+                        <td>
+                            <button onclick="restoreVendor(${index})">Restore</button>
+                            <button onclick="deletePermanently(${index})">Delete Permanently</button>
+                        </td>
+                    </tr>
+                `);
+            });
+        }
+
+        // Search functionality for recycle bin
+        function searchRecycleBin() {
+            const query = searchInputRecycle.value.toLowerCase();
+
+            const filteredRecycle = recycleBin.filter(vendor => {
+                return (
+                    vendor.id.toString().toLowerCase().includes(query) || // Convert ID to string for comparison
+                    vendor.name.toLowerCase().includes(query) ||          // Check if name contains query
+                    (vendor.contact && vendor.contact.toLowerCase().includes(query)) // Check contact if available
+                );
+            });
+
+            recycleTable.innerHTML = '';
+            filteredRecycle.forEach((vendor, index) => {
+                recycleTable.insertAdjacentHTML('beforeend', `
+                    <tr>
+                        <td>${vendor.id}</td>
+                        <td>${vendor.name}</td>
+                        <td>
+                            <button onclick="restoreVendor(${index})">Restore</button>
+                            <button onclick="deletePermanently(${index})">Delete Permanently</button>
+                        </td>
+                    </tr>
+                `);
+            });
+        }
+
+        // Restore vendor
+        function restoreVendor(index) {
+            const restoredVendor = recycleBin.splice(index, 1)[0];
+            vendors.push(restoredVendor);
+            localStorage.setItem('vendors', JSON.stringify(vendors));
+            localStorage.setItem('recycleBin', JSON.stringify(recycleBin));
+            loadRecycleBin();
+        }
+
+        // Permanently delete vendor
+        function deletePermanently(index) {
+            recycleBin.splice(index, 1);
+            localStorage.setItem('recycleBin', JSON.stringify(recycleBin));
+            loadRecycleBin();
+        }
+
+        loadRecycleBin();
+    </script>
+</body>
+</html

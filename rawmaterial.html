@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Material List Table</title>
+    <link rel="stylesheet" href="rawmaterial.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Material List</h1>
+        <nav>
+            <button id="homeBtn"><i class="fas fa-home"> <a href="Dashboard.html"></a></i> Home</button>
+            <button id="manufacturingBtn">Manufacturing Material</button>
+            <button id="materialListBtn">Material List</button>
+        </nav>
+    </header>
+    <div class="container">
+        <div class="table-controls">
+            <div class="export-buttons">
+                <button id="copyBtn">Copy</button>
+                <button id="csvBtn">CSV</button>
+                <button id="excelBtn">Excel</button>
+                <button id="pdfBtn">PDF</button>
+                <button id="printBtn">Print</button>
+            </div>
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Search...">
+                <button id="searchBtn">Search</button>
+            </div>
+        </div>
+        <table id="materialTable">
+            <thead>
+                <tr>
+                    <th>Sr. No</th>
+                    <th>Batch No</th>
+                    <th>Material Name</th>
+                    <th>Unit</th>
+                    <th>Quantity</th>
+                    <th>In Date</th>
+                    <th>Edit</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Table rows will be dynamically added here -->
+            </tbody>
+        </table>
+    </div>
+    <script src="rawmaterial.js"></script>
+</body>
+</html>
+

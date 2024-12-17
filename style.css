@@ -224,11 +224,6 @@ body {
     opacity: 1;
 }
 
-#pieChart, #barChart {
+#taskChart, #barChart {
     height: 400px;
 }
-
-#barChart {
-    height: 400px;
-}
-

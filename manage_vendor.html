@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Vendors</title>
+    <link rel="stylesheet" href="vendor.css">
+   
+</head>
+<body>
+    <div class="container">
+        <h2>Manage Vendors</h2>
+        <div class="search-container">
+            <input type="text" id="searchBar" placeholder="Search by Name or ID..." oninput="filterVendors()">
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Vendor ID</th>
+                    <th>Name</th>
+                    <th>Contact</th>
+                    <th>Email</th>
+                    <th>Business Type</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="vendorTable">
+                <!-- Vendors dynamically loaded -->
+            </tbody>
+        </table>
+        <div style="margin-top: 20px;">
+            <button onclick="window.location.href='add_vendor.html'">Add Vendor</button>
+            <button onclick="window.location.href='recycle_vendor.html'">Recycle Vendors</button>
+        </div>
+    </div>
+    
+
+    <!-- Modal for editing vendor -->
+    <div class="overlay" id="overlay"></div>
+    <div class="modal" id="editModal">
+        <div class="modal-header">Edit Vendor</div>
+        <form id="editForm">
+            <label for="editName">Name:</label>
+            <input type="text" id="editName" required><br><br>
+            <label for="editContact">Contact:</label>
+            <input type="text" id="editContact" required><br><br>
+            <label for="editEmail">Email:</label>
+            <input type="email" id="editEmail" required><br><br>
+            <label for="editBusiness">Business Type:</label>
+            <input type="text" id="editBusiness" required><br>
+            <div class="modal-footer">
+                <button type="button" onclick="closeEditModal()">Cancel</button>
+                <button type="submit">Save</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        const vendorTable = document.getElementById('vendorTable');
+        let vendors = JSON.parse(localStorage.getItem('vendors')) || [];
+        let recycleBin = JSON.parse(localStorage.getItem('recycleBin')) || [];
+        let editIndex = null;
+
+        // Function to load vendors into the table
+        function loadVendors() {
+            vendorTable.innerHTML = '';
+            vendors.forEach((vendor, index) => {
+                vendorTable.insertAdjacentHTML('beforeend', `
+                    <tr>
+                        <td>${vendor.id}</td>
+                        <td>${vendor.name}</td>
+                        <td>${vendor.contact}</td>
+                        <td>${vendor.email}</td>
+                        <td>${vendor.business}</td>
+                        <td>
+                            <button onclick="openEditModal(${index})">Edit</button>
+                            <button onclick="deleteVendor(${index})">Delete</button>
+                        </td>
+                    </tr>
+                `);
+            });
+        }
+
+        // Open the edit modal
+        function openEditModal(index) {
+            editIndex = index;
+            const vendor = vendors[index];
+            document.getElementById('editName').value = vendor.name;
+            document.getElementById('editContact').value = vendor.contact;
+            document.getElementById('editEmail').value = vendor.email;
+            document.getElementById('editBusiness').value = vendor.business;
+            document.getElementById('editModal').classList.add('show');
+            document.getElementById('overlay').classList.add('show');
+        }
+
+        // Close the edit modal
+        function closeEditModal() {
+            document.getElementById('editModal').classList.remove('show');
+            document.getElementById('overlay').classList.remove('show');
+        }
+
+        // Save the edited vendor
+        document.getElementById('editForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            vendors[editIndex] = {
+                ...vendors[editIndex],
+                name: document.getElementById('editName').value,
+                contact: document.getElementById('editContact').value,
+                email: document.getElementById('editEmail').value,
+                business: document.getElementById('editBusiness').value,
+            };
+            localStorage.setItem('vendors', JSON.stringify(vendors));
+            loadVendors();
+            closeEditModal();
+        });
+
+        // Delete vendor and move to recycle bin
+        function deleteVendor(index) {
+            const deletedVendor = vendors.splice(index, 1)[0];
+            recycleBin.push(deletedVendor);
+            localStorage.setItem('vendors', JSON.stringify(vendors));
+            localStorage.setItem('recycleBin', JSON.stringify(recycleBin));
+            loadVendors();
+        }
+
+        loadVendors(); // Initial load of vendors
+
+
+// Function to filter vendors based on search query
+function filterVendors() {
+    const searchTerm = document.getElementById('searchBar').value.toLowerCase();
+    const filteredVendors = vendors.filter(vendor => {
+        return vendor.name.toLowerCase().includes(searchTerm) || vendor.id.toString().includes(searchTerm);
+    });
+    displayFilteredVendors(filteredVendors);
+}
+
+// Function to display filtered vendors
+function displayFilteredVendors(filteredVendors) {
+    vendorTable.innerHTML = '';
+    filteredVendors.forEach((vendor, index) => {
+        vendorTable.insertAdjacentHTML('beforeend', `
+            <tr>
+                <td>${vendor.id}</td>
+                <td>${vendor.name}</td>
+                <td>${vendor.contact}</td>
+                <td>${vendor.email}</td>
+                <td>${vendor.business}</td>
+                <td>
+                    <button onclick="openEditModal(${index})">Edit</button>
+                    <button onclick="deleteVendor(${index})">Delete</button>
+                </td>
+            </tr>
+        `);
+    });
+}
+
+
+    </script>
+</body>
+</html>
